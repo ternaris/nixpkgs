@@ -10,6 +10,10 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
+  preConfigure = ''
+    sed -i lib/fpending.h -e 's,include <stdio_ext.h>,,'
+  '';
+
   # In stdenv-linux, prevent a dependency on bootstrap-tools.
   makeFlags = "SHELL=/bin/sh GREP=grep";
 

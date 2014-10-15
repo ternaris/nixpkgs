@@ -10,6 +10,10 @@ stdenv.mkDerivation {
 
   patches = [ ./no-gets.patch ] ++ stdenv.lib.optional stdenv.isDarwin ./darwin-fix.patch;
 
+  preConfigure = ''
+    sed -i gnu/fpending.h -e 's,include <stdio_ext.h>,,'
+  '';
+
   meta = {
     homepage = http://www.gnu.org/software/cpio/;
     description = "A program to create or extract from cpio archives";

@@ -1,5 +1,6 @@
 addPythonPath() {
-    addToSearchPathWithCustomDelimiter : PYTHONPATH $1/lib/python2.7/site-packages
+    export PYTHONPATH="$PYTHONPATH${PYTHONPATH:+;}$(cygpath -a -w $1/lib/python2.7/site-packages)"
+    #addToSearchPathWithCustomDelimiter ';' PYTHONPATH "$(cygpath -a -w $1/lib/python2.7/site-packages)"
 }
 
 toPythonPath() {

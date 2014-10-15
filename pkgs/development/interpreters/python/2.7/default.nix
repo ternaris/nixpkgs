@@ -108,7 +108,7 @@ let
         hierarchical packages; exception-based error handling; and very
         high level dynamic data types.
       '';
-      license = stdenv.lib.licenses.psfl;
+      license = stdenv.lib.licenses.psfl
       platforms = stdenv.lib.platforms.all;
       maintainers = with stdenv.lib.maintainers; [ simons chaoflow ];
     };

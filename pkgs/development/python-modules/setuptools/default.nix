@@ -19,8 +19,9 @@ stdenv.mkDerivation rec {
     ''
       dst=$out/lib/${python.libPrefix}/site-packages
       mkdir -p $dst
-      PYTHONPATH="$dst:$PYTHONPATH"
-      ${python}/bin/${python.executable} setup.py install --prefix=$out --install-lib=$out/lib/${python.libPrefix}/site-packages
+      windst=$(cygpath -a -w $dst)
+      export PYTHONPATH="$windst;$PYTHONPATH"
+      ${python}/bin/${python.executable} setup.py install --prefix=$(cygpath -a -w $out) --install-lib=$windst
       wrapPythonPrograms
     '';
 
