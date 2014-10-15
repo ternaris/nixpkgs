@@ -255,6 +255,7 @@ stdenv.mkDerivation rec {
   '';
 
   preInstall = "mkdir -p $out/etc/vim";
+  makeFlags = "DESTDIR=/.";
 
   meta = with stdenv.lib; {
     description = "Text-based document generation system";

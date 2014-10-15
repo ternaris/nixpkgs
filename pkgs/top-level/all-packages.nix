@@ -3892,7 +3892,8 @@ let
   perl520 = callPackage ../development/interpreters/perl/5.20 { };
 
   #perl = if system != "i686-cygwin" then perl516 else sysPerl;
-  perl = sysPerl;
+  #perl = sysPerl;
+  perl = perl516;
 
   php = php54;
 
