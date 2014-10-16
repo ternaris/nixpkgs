@@ -21,27 +21,20 @@ stdenv.mkDerivation {
 
   makeFlags = "PREFIX=$(out)";
 
-  # postInstall = (stdenv.lib.optionalString guiSupport
-  #   ''
-  #     mkdir -p $out/etc/mercurial
-  #     cp contrib/hgk $out/bin
-  #     cat >> $out/etc/mercurial/hgrc << EOF
-  #     [extensions]
-  #     hgk=$out/lib/${python.libPrefix}/site-packages/hgext/hgk.py
-  #     EOF
-  #     # setting HG so that hgk can be run itself as well (not only hg view)
-  #     WRAP_TK=" --set TK_LIBRARY \"${tk}/lib/${tk.libPrefix}\"
-  #               --set HG \"$out/bin/hg\"
-  #               --prefix PATH : \"${tk}/bin\" "
-  #   '') +
-#  postInstall = ''
-      # for i in $(cd $out/bin && ls); do
-      #   wrapProgram $out/bin/$i \
-      #     --prefix PYTHONPATH : "$(toPythonPath "$out ${curses}")" \
-      #     $WRAP_TK
-      # done
-
-  postInstall = ''
+  postInstall = (stdenv.lib.optionalString guiSupport
+    ''
+      mkdir -p $out/etc/mercurial
+      cp contrib/hgk $out/bin
+      cat >> $out/etc/mercurial/hgrc << EOF
+      [extensions]
+      hgk=$out/lib/${python.libPrefix}/site-packages/hgext/hgk.py
+      EOF
+      # setting HG so that hgk can be run itself as well (not only hg view)
+      WRAP_TK=" --set TK_LIBRARY \"${tk}/lib/${tk.libPrefix}\"
+                --set HG \"$out/bin/hg\"
+                --prefix PATH : \"${tk}/bin\" "
+    '') +
+    ''
       mkdir -p $out/etc/mercurial
       cat >> $out/etc/mercurial/hgrc << EOF
       [web]
@@ -52,6 +45,8 @@ stdenv.mkDerivation {
       mkdir -p $out/share/cgi-bin
       cp -v hgweb.cgi contrib/hgweb.wsgi $out/share/cgi-bin
       chmod u+x $out/share/cgi-bin/hgweb.cgi
+
+      sed -i $out/bin/hg -e 's,#!.*$,#!${python}/bin/${python.executable},'
     '';
 
   meta = {

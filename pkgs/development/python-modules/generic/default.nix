@@ -102,16 +102,14 @@ if disabled then throw "${name} not supported for interpreter ${python.executabl
   installPhase = attrs.installPhase or ''
     runHook preInstall
 
-    dst="$out/lib/${python.libPrefix}/site-packages"
-    mkdir -p "$dst"
-    windst=$(cygpath -a -w $dst)
+    mkdir -p "$out/lib/${python.libPrefix}/site-packages"
 
-    export PYTHONPATH="$windst;$PYTHONPATH"
+    export PYTHONPATH="$out/lib/${python.libPrefix}/site-packages:$PYTHONPATH"
 
     ${python}/bin/${python.executable} setup.py install \
-      --install-lib=$windst \
+      --install-lib=$out/lib/${python.libPrefix}/site-packages \
       --old-and-unmanageable \
-      --prefix="$(cygpath out)" ${lib.concatStringsSep " " setupPyInstallFlags}
+      --prefix="$out" ${lib.concatStringsSep " " setupPyInstallFlags}
 
     # --install-lib:
     # sometimes packages specify where files should be installed outside the usual

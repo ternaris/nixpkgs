@@ -7376,11 +7376,14 @@ let
       url = "http://dev.mysql.com/get/Downloads/MySQL-5.5/mysql-5.5.40-win32.zip";
       md5 = "3c3e17e4870adecf834734e98e19dbb6";
     };
+    buildInputs = [ perl ];
     installPhase = ''
       srcdir=$(basename $PWD)
       cd ..
       mkdir -p $out
       mv $srcdir $out/raw
+      patchShebangs $out/raw/bin
+      chmod +x $out/raw/bin/?*.pl
     '';
   };
   mysql55 = stdenv.mkDerivation {
@@ -7390,7 +7393,12 @@ let
     buildInputs = [ mysql55raw ];
     installPhase = ''
       mkdir -p $out/bin
+      mkdir -p $out/include
+      mkdir -p $out/lib
       ln -s ${mysql55raw}/raw/bin/?* $out/bin/
+      ln -s mysql_config.pl $out/bin/mysql_config
+      ln -s ${mysql55raw}/raw/include/?* $out/include/
+      ln -s ${mysql55raw}/raw/lib/?* $out/lib/
     '';
   };
 
