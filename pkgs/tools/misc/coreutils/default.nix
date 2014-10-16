@@ -81,6 +81,10 @@ let
     };
   } // optionalAttrs stdenv.isDarwin {
     makeFlags = "CFLAGS=-D_FORTIFY_SOURCE=0";
+  } // optionalAttrs stdenv.isCygwin {
+    preConfigure = ''
+      sed -i lib/fpending.h -e 's,include <stdio_ext.h>,,'
+    '';
   });
 in
   self
