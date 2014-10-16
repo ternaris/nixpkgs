@@ -1,5 +1,5 @@
---- src/coreutils-8.21/lib/mountlist.c.orig	2013-02-07 20:44:47.000000000 +0400
-+++ src/coreutils-8.21/lib/mountlist.c	2013-06-29 22:19:56.000000000 +0400
+--- coreutils-8.21/lib/mountlist.c.orig	2013-02-07 20:44:47.000000000 +0400
++++ coreutils-8.21/lib/mountlist.c	2013-06-29 22:19:56.000000000 +0400
 @@ -167,15 +167,48 @@
     /* for Irix 6.5 */                           \
     || strcmp (Fs_type, "ignore") == 0)
