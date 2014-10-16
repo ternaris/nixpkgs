@@ -28,6 +28,22 @@ let
       # patch python to put zero timestamp into pyc
       # if DETERMINISTIC_BUILD env var is set
       ./deterministic-build.patch
+
+        ./0010-ctypes-util-find_library.patch
+        ./0020-tkinter-x11.patch
+        ./0030-ssl-threads.patch
+        ./0040-FD_SETSIZE.patch
+        ./0050-export-PySignal_SetWakeupFd.patch
+        ./0060-ncurses-abi6.patch
+        ./0070-dbm.patch
+        ./0080-dylib.patch
+        ./0090-getpath-exe-extension.patch
+        ./0100-no-libm.patch
+        ./0110-export-PyNode_SizeOf.patch
+        ./0120-fix-sqlite-module.patch
+        ./0210-reorder-bininstall-ln-symlink-creation.patch
+        ./0250-allow-win-drives-in-os-path-isabs.patch
+        ./2.7.5-allow-windows-paths-for-executable.patch
     ];
 
   postPatch = stdenv.lib.optionalString (stdenv.gcc.libc != null) ''
@@ -43,10 +59,7 @@ let
 
   ensurePurity =
     ''
-      # Purity.
-      for i in /usr /sw /opt /pkg; do
-        substituteInPlace ./setup.py --replace $i /no-such-path
-      done
+      sed -i ./setup.py -e 's,/(usr|sw|opt|pkg),/no-such-path,'
     '';
 
   # Build the basic Python interpreter without modules that have
@@ -62,14 +75,19 @@ let
 
     configureFlags = "--enable-shared --with-threads --enable-unicode";
 
-    preConfigure = "${ensurePurity}" + optionalString stdenv.isCygwin
-      ''
-        # On Cygwin, `make install' tries to read this Makefile.
-        mkdir -p $out/lib/python${majorVersion}/config
-        touch $out/lib/python${majorVersion}/config/Makefile
-        mkdir -p $out/include/python${majorVersion}
-        touch $out/include/python${majorVersion}/pyconfig.h
-      '';
+    preConfigure = "${ensurePurity}";
+ # + optionalString stdenv.isCygwin
+ #      ''
+ #        # On Cygwin, `make install' tries to read this Makefile.
+ #        mkdir -p $out/lib/python${majorVersion}/config
+ #        touch $out/lib/python${majorVersion}/config/Makefile
+ #        mkdir -p $out/include/python${majorVersion}
+ #        touch $out/include/python${majorVersion}/pyconfig.h
+ #      '';
+
+    postConfigure = ''
+      sed -i Makefile -e 's,PYTHONPATH="$(srcdir),PYTHONPATH="$(abs_srcdir),'
+    '';
 
     NIX_CFLAGS_COMPILE = optionalString stdenv.isDarwin "-msse2";
 
@@ -78,11 +96,9 @@ let
     postInstall =
       ''
         rm -rf "$out/lib/python${majorVersion}/test"
-        ln -s $out/lib/python${majorVersion}/pdb.py $out/bin/pdb
-        ln -s $out/lib/python${majorVersion}/pdb.py $out/bin/pdb${majorVersion}
-        ln -s $out/share/man/man1/{python2.7.1.gz,python.1.gz}
-
-        paxmark E $out/bin/python${majorVersion}
+        ln -s ../lib/python${majorVersion}/pdb.py $out/bin/pdb
+        ln -s ../lib/python${majorVersion}/pdb.py $out/bin/pdb${majorVersion}
+        ln -s python2.7.1.gz $out/share/man/man1/python.1.gz
       '';
 
     passthru = rec {
@@ -108,7 +124,7 @@ let
         hierarchical packages; exception-based error handling; and very
         high level dynamic data types.
       '';
-      license = stdenv.lib.licenses.psfl
+      license = stdenv.lib.licenses.psfl;
       platforms = stdenv.lib.platforms.all;
       maintainers = with stdenv.lib.maintainers; [ simons chaoflow ];
     };
@@ -192,10 +208,10 @@ let
       deps = [ sqlite ];
     };
 
-    tkinter = buildInternalPythonModule {
-      moduleName = "tkinter";
-      deps = [ tcl tk x11 libX11 ];
-    };
+    # tkinter = buildInternalPythonModule {
+    #   moduleName = "tkinter";
+    #   deps = [ tcl tk x11 libX11 ];
+    # };
 
     readline = buildInternalPythonModule {
       moduleName = "readline";

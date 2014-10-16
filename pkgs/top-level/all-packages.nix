@@ -3939,40 +3939,7 @@ let
   python2Full = python27Full;
 
   python26 = callPackage ../development/interpreters/python/2.6 { db = db47; };
-  #python27 = callPackage ../development/interpreters/python/2.7 { };
-  python27 = stdenv.mkDerivation {
-    majorVersion = "2.7";
-    version = "2.7.8";    
-    setupHook = ../development/interpreters/python/2.7/setup-hook.sh;
-    passthru = rec {
-      inherit zlibSupport;
-      isPy2 = true;
-      isPy27 = true;
-      libPrefix = "python2.7";
-      executable = libPrefix;
-      sitePackages = "lib/${libPrefix}/site-packages";
-      modules = { curses = null; };
-    };
-    meta.platforms = stdenv.lib.platforms.all;
-    name = "python-2.7.8";
-    src = fetchurl {
-      url = "https://www.python.org/ftp/python/2.7.8/python-2.7.8.msi";
-      sha256 = "007m0i8fymbxvq9ndm55k00fv9gmd7sgj6i1lilmvhbvrm04knxf";
-    };
-    unpackPhase = "true";
-    installPhase = ''
-      mkdir -p $out/msi
-      /cygdrive/c/Windows/system32/msiexec /a $(cygpath -a -w $src) TARGETDIR=$(cygpath -a -w $out/msi/Python27) /qn /norestart
-
-      mkdir -p $out/bin
-      ln -s $out/msi/Python27/python.exe $out/bin/python.exe
-      ln -s $out/msi/Python27/python.exe $out/bin/python2.7.exe
-    '';
-    doInstallCheck = true;
-    installCheckPhase = ''
-      $out/bin/python2.7 -c 'import sys,pprint;pprint.pprint(sys.path)'
-    '';
-  };
+  python27 = callPackage ../development/interpreters/python/2.7 { tk = null; };
   python32 = callPackage ../development/interpreters/python/3.2 { };
   python33 = callPackage ../development/interpreters/python/3.3 { };
   python34 = hiPrio (callPackage ../development/interpreters/python/3.4 { });
