@@ -55,6 +55,7 @@ let
   buildInputs =
     optional (stdenv ? gcc && stdenv.gcc.libc != null) stdenv.gcc.libc ++
     [ bzip2 openssl ]
+    ++ [ db ncurses gdbm sqlite readline ]
     ++ optional zlibSupport zlib;
 
   ensurePurity =
@@ -131,93 +132,23 @@ let
   };
 
 
-  # This function builds a Python module included in the main Python
-  # distribution in a separate derivation.
-  buildInternalPythonModule =
-    { moduleName
-    , internalName ? "_" + moduleName
-    , deps
-    }:
-    stdenv.mkDerivation rec {
-      name = "python-${moduleName}-${python.version}";
-
-      inherit src patches postPatch;
-
-      buildInputs = [ python ] ++ deps;
-
-      C_INCLUDE_PATH = concatStringsSep ":" (map (p: "${p}/include") buildInputs);
-      LIBRARY_PATH = concatStringsSep ":" (map (p: "${p}/lib") buildInputs);
-
-      configurePhase = "${ensurePurity}";
-
-      buildPhase =
-        ''
-          # Fake the build environment that setup.py expects.
-          ln -s ${python}/include/python*/pyconfig.h .
-          ln -s ${python}/lib/python*/config/Setup Modules/
-          ln -s ${python}/lib/python*/config/Setup.local Modules/
-
-          substituteInPlace setup.py --replace 'self.extensions = extensions' \
-            'self.extensions = [ext for ext in self.extensions if ext.name in ["${internalName}"]]'
-
-          python ./setup.py build_ext
-        '';
-
-      installPhase =
-        ''
-          dest=$out/lib/${python.libPrefix}/site-packages
-          mkdir -p $dest
-          cp -p $(find . -name "*.${if stdenv.isCygwin then "dll" else "so"}") $dest/
-        '';
-    };
-
-
   # The Python modules included in the main Python distribution, built
   # as separate derivations.
   modules = {
 
-    bsddb = buildInternalPythonModule {
-      moduleName = "bsddb";
-      deps = [ db ];
-    };
+    bsddb = null;
+    curses = null;
+    curses_panel = null;
+    crypt = null;
+    gdbm = null;
+    sqlite3 = null;
 
-    curses = buildInternalPythonModule {
-      moduleName = "curses";
-      deps = [ ncurses ];
-    };
-
-    curses_panel = buildInternalPythonModule {
-      moduleName = "curses_panel";
-      deps = [ ncurses modules.curses ];
-    };
-
-    crypt = buildInternalPythonModule {
-      moduleName = "crypt";
-      internalName = "crypt";
-      deps = [ ];
-    };
-
-    gdbm = buildInternalPythonModule {
-      moduleName = "gdbm";
-      internalName = "gdbm";
-      deps = [ gdbm ];
-    };
-
-    sqlite3 = buildInternalPythonModule {
-      moduleName = "sqlite3";
-      deps = [ sqlite ];
-    };
-
-    # tkinter = buildInternalPythonModule {
+    # tkinter = null;
     #   moduleName = "tkinter";
     #   deps = [ tcl tk x11 libX11 ];
     # };
 
-    readline = buildInternalPythonModule {
-      moduleName = "readline";
-      internalName = "readline";
-      deps = [ readline ];
-    };
+    readline = null;
 
   };
 
