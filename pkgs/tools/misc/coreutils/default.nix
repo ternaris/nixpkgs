@@ -18,7 +18,7 @@ let
       sha256 = "064f512185iysqqcvhnhaf3bfmzrvcgs7n405qsyp99zmfyl9amd";
     };
 
-    patches = [ ./help2man.patch ];
+    patches = [ ./help2man.patch ./coreutils-8.21-msys2-hasmntopt.patch ];
 
     nativeBuildInputs = [ perl ];
     buildInputs = [ gmp ]
