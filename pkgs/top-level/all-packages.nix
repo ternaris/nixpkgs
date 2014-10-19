@@ -7376,7 +7376,7 @@ let
       url = "http://dev.mysql.com/get/Downloads/MySQL-5.5/mysql-5.5.40-win32.zip";
       md5 = "3c3e17e4870adecf834734e98e19dbb6";
     };
-    buildInputs = [ perl ];
+    buildInputs = [ perl unzip ];
     installPhase = ''
       srcdir=$(basename $PWD)
       cd ..
