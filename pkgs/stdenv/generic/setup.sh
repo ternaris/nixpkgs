@@ -832,6 +832,8 @@ fixupPhase() {
         substituteAll "$setupHook" "$out/nix-support/setup-hook"
     fi
 
+    find $out -regextype posix-egrep -regex '*.\.(so|dll)' -print0 | xargs -0 /bin/rebase -s --32
+
     runHook postFixup
 }
 
