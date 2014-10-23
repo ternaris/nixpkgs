@@ -8,7 +8,8 @@ stdenv.mkDerivation rec {
     sha256 = "077ibkf84bvcd6rw1m6jb107br63i2pp301rkmsbgg6300adxp8x";
   };
 
-  patches = stdenv.lib.optional (stdenv.needsPax) ./libffi-3.0.13-emutramp_pax_proc.patch;
+  patches = stdenv.lib.optional (stdenv.needsPax) ./libffi-3.0.13-emutramp_pax_proc.patch
+    ++ stdenv.lib.optional stdenv.isCygwin ./3.0.12-cygwin.patch;
 
   buildInputs = stdenv.lib.optional doCheck dejagnu;
 
