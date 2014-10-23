@@ -3887,9 +3887,7 @@ let
 
   perl520 = callPackage ../development/interpreters/perl/5.20 { };
 
-  # CYGWINTODO
-
-  perl = if system != "i686-cygwin" then perl516 else sysPerl;
+  perl = perl516;
 
   php = php54;
 
@@ -4037,8 +4035,6 @@ let
   };
 
   supercollider_scel = supercollider.override { useSCEL = true; };
-
-  sysPerl = callPackage ../development/interpreters/perl/sys-perl { };
 
   tcl = callPackage ../development/interpreters/tcl { };
 
