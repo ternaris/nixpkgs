@@ -1,4 +1,4 @@
-{stdenv, fetchurl}:
+{ stdenv, fetchurl, automake, libtool }:
 let
   s = # Generated upstream information
   rec {
@@ -9,8 +9,7 @@ let
     url="http://www.ivmaisoft.com/_bin/atomic_ops/libatomic_ops-7.4.2.tar.gz";
     sha256="1pdm0h1y7bgkczr8byg20r6bq15m5072cqm5pny4f9crc9gn3yh4";
   };
-  buildInputs = [
-  ];
+  buildInputs = [ automake libtool ];
 in
 stdenv.mkDerivation {
   inherit (s) name version;
@@ -18,6 +17,10 @@ stdenv.mkDerivation {
   src = fetchurl {
     inherit (s) url sha256;
   };
+  preConfigure=''
+      sed -e "/libatomic_ops_gpl_la_SOURCES/a libatomic_ops_gpl_la_LIBADD = libatomic_ops.la" -i"" src/Makefile.am
+      ./autogen.sh
+    '';
   meta = {
     inherit (s) version;
     description = ''A library for semi-portable access to hardware-provided atomic memory update operations'';
