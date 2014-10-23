@@ -70,18 +70,20 @@ rec {
     export NIX_GCC_NEEDS_GREP=1
   '';
 
-  # CYGWINTODO
-
+  # Only used to build stdenvCygwin, check cygwin/default.nix.
+  # XXX: Can we readfile the same on as used for cygwin/default.nix
   prehookCygwin = ''
     ${prehookBase}
-
-    if test -z "$cygwinConfigureEnableShared"; then
-      export configureFlags="$configureFlags --disable-shared"
-    fi
-
-    PATH_DELIMITER=';'
   '';
+  #   if test -z "$cygwinConfigureNoDisableShared"; then
+  #     export configureFlags="$configureFlags --disable-shared"
+  #   fi
 
+  #   # Should not be needed by cygwin, but would be relevant for mingw.
+  #   PATH_DELIMITER=';'
+  # '';
+
+  extraBuildInputsCygwin = [ ../cygwin/rebase-libraries.sh ];
 
   # A function that builds a "native" stdenv (one that uses tools in
   # /usr etc.).
@@ -95,7 +97,14 @@ rec {
         if system == "x86_64-freebsd" then prehookFreeBSD else
         if system == "i686-openbsd" then prehookOpenBSD else
         if system == "i686-netbsd" then prehookNetBSD else
+        if system == "i686-cygwin" then prehookCygwin else
+        if system == "x86_64-cygwin" then prehookCygwin else
         prehookBase;
+
+      extraBuildInputs =
+        if system == "i686-cygwin" then extraBuildInputsCygwin else
+        if system == "x86_64-cygwin" then extraBuildInputsCygwin else
+        [];
 
       initialPath = extraPath ++ path;
 

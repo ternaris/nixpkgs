@@ -4156,11 +4156,20 @@ let
 
   bam = callPackage ../development/tools/build-managers/bam {};
 
-  binutils = if stdenv.isDarwin
-    then stdenv.gcc.binutils
-    else callPackage ../development/tools/misc/binutils {
+  binutils = if stdenv.isDarwin then stdenv.gcc.binutils
+    else if stdenv.isCygwin then sysBinutils
+     else callPackage ../development/tools/misc/binutils {
       inherit noSysDirs;
     };
+
+  sysBinutils = stdenv.mkDerivation {
+    name = "binutils-native";
+    unpackPhase = "true";
+    installPhase = ''
+      mkdir -p $out/bin
+      ln -s /usr/bin/{addr2line,ar,as,c++filt,elfedit,gprof,ld,ld.bfd,nm,objcopy,objdump,ranlib,readelf,size,strings,strip} $out/bin/
+    '';
+  };
 
   binutils_nogold = lowPrio (callPackage ../development/tools/misc/binutils {
     inherit noSysDirs;

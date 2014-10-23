@@ -38,6 +38,14 @@ rec {
   stdenvLinux = (import ./linux { inherit system allPackages platform config lib; }).stdenvLinux;
 
 
+  # Cygwin stdenv - something between stdenvNative and stdenvNix
+  stdenvCygwin = import ./cygwin {
+    inherit config lib;
+    stdenv = stdenvNative;
+    pkgs = stdenvNativePkgs;
+  };
+
+
   # Select the appropriate stdenv for the platform `system'.
   stdenv =
     if system == "i686-linux" then stdenvLinux else
@@ -49,5 +57,7 @@ rec {
     if system == "powerpc-linux" then /* stdenvLinux */ stdenvNative else
     if system == "x86_64-darwin" then stdenvNix else
     if system == "x86_64-solaris" then stdenvNix else
+    if system == "i686-cygwin" then stdenvCygwin else
+    if system == "x86_64-cygwin" then stdenvCygwin else
     stdenvNative;
 }
