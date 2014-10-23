@@ -900,6 +900,8 @@ let
 
   cudatoolkit = cudatoolkit5;
 
+  # CYGWINTODO
+
   curl = callPackage ../tools/networking/curl rec {
     fetchurl = fetchurlBoot;
     zlibSupport = true;
@@ -3885,6 +3887,8 @@ let
 
   perl520 = callPackage ../development/interpreters/perl/5.20 { };
 
+  # CYGWINTODO
+
   perl = if system != "i686-cygwin" then perl516 else sysPerl;
 
   php = php54;
@@ -4101,6 +4105,8 @@ let
   pharo-launcher = callPackage ../development/pharo/launcher { };
 
   srecord = callPackage ../development/tools/misc/srecord { };
+
+  # CYGWINTODO
 
   windowssdk = (
     import ../development/misc/windows-sdk {
@@ -6182,6 +6188,8 @@ let
   mythes = callPackage ../development/libraries/mythes { };
 
   nanomsg = callPackage ../development/libraries/nanomsg { };
+
+  # CYGWINTODO
 
   ncurses = callPackage ../development/libraries/ncurses {
     unicode = system != "i686-cygwin";
@@ -8332,6 +8340,8 @@ let
   v4l_utils = callPackage ../os-specific/linux/v4l-utils {
     withQt4 = true;
   };
+
+  # CYGWINTODO
 
   windows = rec {
     cygwinSetup = callPackage ../os-specific/windows/cygwin-setup { };

@@ -32,6 +32,8 @@ let
       ./remove-avoid-daemon-thread-shutdown.patch
     ];
     
+  # CYGWINTODO
+
   preConfigure = ''
       # Purity.
       for i in /usr /sw /opt /pkg; do

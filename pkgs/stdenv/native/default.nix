@@ -70,6 +70,8 @@ rec {
     export NIX_GCC_NEEDS_GREP=1
   '';
 
+  # CYGWINTODO
+
   prehookCygwin = ''
     ${prehookBase}
 

@@ -26,6 +26,8 @@ let
       ./nix-store-mtime.patch
     ];
     
+  # CYGWINTODO
+
   preConfigure = ''
       # Purity.
       for i in /usr /sw /opt /pkg; do
