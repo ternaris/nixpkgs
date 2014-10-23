@@ -18,6 +18,7 @@ stdenv.mkDerivation rec {
     '';
   };
 
+  # CYGWINTODO
   doCheck = !stdenv.isCygwin; # XXX: `test-dup2' segfaults on Cygwin 6.1
 
   buildInputs = [ libsigsegv ]

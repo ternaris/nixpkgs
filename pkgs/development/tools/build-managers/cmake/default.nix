@@ -25,6 +25,8 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
+  # CYGWINTODO: check patches, they remove cygwin stuff
+
   patches =
     [(fetchpatch { # see http://www.cmake.org/Bug/view.php?id=13959
       name = "FindFreetype-2.5.patch";

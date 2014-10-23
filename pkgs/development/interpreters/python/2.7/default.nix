@@ -29,6 +29,8 @@ let
       ./deterministic-build.patch
     ];
     
+  # CYGWINTODO
+
   preConfigure = ''
       # Purity.
       for i in /usr /sw /opt /pkg; do

@@ -11,6 +11,8 @@ stdenv.mkDerivation (rec {
   buildInputs = [ gnum4 ];
   propagatedBuildInputs = [ gmp ];
 
+  # CYGWINTODO
+
   doCheck = (stdenv.system != "i686-cygwin" && !stdenv.isDarwin);
 
   enableParallelBuilding = true;

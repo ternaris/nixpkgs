@@ -16,6 +16,8 @@ stdenv.mkDerivation rec {
 
   makeFlags = [ "world" ];
 
+  # CYGWINTODO: patch also others?
+
   patches = [ ./disable-resolve_symlinks.patch ./less-is-more.patch ];
 
   installTargets = [ "install-world" ];

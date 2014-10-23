@@ -22,6 +22,8 @@ stdenv.mkDerivation rec {
     ${if !cplusplusSupport then "--disable-cpp" else ""}
   '' + optionalString stdenv.isDarwin "CXXFLAGS=-O0";
 
+  # CYGWINTODO
+
   doCheck = with stdenv; !(isCygwin || isFreeBSD);
     # XXX: test failure on Cygwin
     # we are running out of stack on both freeBSDs on Hydra
