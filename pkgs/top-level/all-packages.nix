@@ -4305,9 +4305,7 @@ let
     fetchurl = fetchurlBoot;
   };
 
-  # CYGWINTODO
-
-  perl = if system != "i686-cygwin" then perl520 else sysPerl;
+  perl = perl520;
 
   php = php54;
 
@@ -4451,8 +4449,6 @@ let
   };
 
   supercollider_scel = supercollider.override { useSCEL = true; };
-
-  sysPerl = callPackage ../development/interpreters/perl/sys-perl { };
 
   tcl = callPackage ../development/interpreters/tcl { };
 
