@@ -2,9 +2,26 @@
 
 assert interactive -> readline != null;
 
+# XXX: make a bashFun that takes the version?
+
 let
-  realName = "bash-4.2";
+  version = if stdenv.isCygwin then "4.1" else "4.2";
+  realName = "bash-${version}";
+  shortName = if stdenv.isCygwin then "bash41" else "bash42";
   baseConfigureFlags = if interactive then "--with-installed-readline" else "--disable-readline";
+  sha256 = if version == "4.1" then
+      "1np1ggp1lv8idwfx3mcxl9rhadqdf4h3x4isa3dk8v9wm0j72qiz"
+    else
+      "a27a1179ec9c0830c65c6aa5d7dab60f7ce1a2a608618570f96bfa72e95ab3d8";
+
+  basePatches = if version == "4.1" then
+      ./bash-4.1-patches.nix
+    else
+      ./bash-4.2-patches.nix;
+
+  extraPatches = if stdenv.isCygwin then
+      [ ./bash-4.1.17-9.src.patch ]
+    else [];
 in
 
 stdenv.mkDerivation rec {
@@ -12,7 +29,7 @@ stdenv.mkDerivation rec {
 
   src = fetchurl {
     url = "mirror://gnu/bash/${realName}.tar.gz";
-    sha256 = "a27a1179ec9c0830c65c6aa5d7dab60f7ce1a2a608618570f96bfa72e95ab3d8";
+    inherit sha256;
   };
 
   NIX_CFLAGS_COMPILE = ''
@@ -30,11 +47,11 @@ stdenv.mkDerivation rec {
     (let
       patch = nr: sha256:
         fetchurl {
-          url = "mirror://gnu/bash/bash-4.2-patches/bash42-${nr}";
+          url = "mirror://gnu/bash/${realName}-patches/${shortName}-${nr}";
           inherit sha256;
         };
     in
-      import ./bash-4.2-patches.nix patch);
+      import basePatches patch) ++ extraPatches;
 
   crossAttrs = {
     configureFlags = baseConfigureFlags +
