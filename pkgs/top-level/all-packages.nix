@@ -7380,7 +7380,41 @@ let
     ps = procps; /* !!! Linux only */
   };
 
-  mysql55 = callPackage ../servers/sql/mysql/5.5.x.nix { };
+  #mysql55 = callPackage ../servers/sql/mysql/5.5.x.nix { };
+  mysql55raw = stdenv.mkDerivation {
+    name = "mysql-raw-5.5.40";
+    src = if system == "i686-cygwin" then (fetchurl {
+      url = http://dev.mysql.com/get/Downloads/MySQL-5.5/mysql-5.5.40-win32.zip;
+      md5 = "3c3e17e4870adecf834734e98e19dbb6";
+    }) else if system == "x86_64-cygwin" then (fetchurl {
+      url = http://dev.mysql.com/get/Downloads/MySQL-5.5/mysql-5.5.40-winx64.zip;
+      md5 = "3694cc9aedc254c29aaf1738769264c4";
+    }) else null;
+    buildInputs = [ perl unzip ];
+    installPhase = ''
+      srcdir=$(basename $PWD)
+      cd ..
+      mkdir -p $out
+      mv $srcdir $out/raw
+      patchShebangs $out/raw/bin
+      chmod +x $out/raw/bin/?*.pl
+    '';
+  };
+  mysql55 = stdenv.mkDerivation {
+    name = "mysql-5.5.40";
+    passthru.mysqlVersion = "5.5";
+    unpackPhase = "true";
+    buildInputs = [ mysql55raw ];
+    installPhase = ''
+      mkdir -p $out/bin
+      mkdir -p $out/include
+      mkdir -p $out/lib
+      ln -s ${mysql55raw}/raw/bin/?* $out/bin/
+      ln -s mysql_config.pl $out/bin/mysql_config
+      ln -s ${mysql55raw}/raw/include/?* $out/include/
+      ln -s ${mysql55raw}/raw/lib/?* $out/lib/
+    '';
+  };
 
   mysql = mysql51;
 
