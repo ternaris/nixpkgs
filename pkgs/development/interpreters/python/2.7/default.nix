@@ -1,5 +1,6 @@
 { stdenv, fetchurl, zlib ? null, zlibSupport ? true, bzip2, includeModules ? false
-, sqlite, tcl, tk, x11, openssl, readline, db, ncurses, gdbm, libX11, self, callPackage }:
+, sqlite, tcl, tk, x11, openssl, readline, db, ncurses, gdbm, libX11, self, callPackage
+, expat, libffi }:
 
 assert zlibSupport -> zlib != null;
 
@@ -27,30 +28,30 @@ let
       # patch python to put zero timestamp into pyc
       # if DETERMINISTIC_BUILD env var is set
       ./deterministic-build.patch
+    ] ++ optionals stdenv.isCygwin [
+      ./2.5.2-ctypes-util-find_library.patch
+      ./2.5.2-tkinter-x11.patch
+      ./2.6.2-ssl-threads.patch
+      ./2.6.5-export-PySignal_SetWakeupFd.patch
+      ./2.6.5-FD_SETSIZE.patch
+      ./2.6.5-ncurses-abi6.patch
+      ./2.7.3-dbm.patch
+      ./2.7.3-dylib.patch
+      ./2.7.3-getpath-exe-extension.patch
+      ./2.7.3-no-libm.patch
+      ./2.7.5-export-PyNode_SizeOf.patch
     ];
-    
-  # CYGWINTODO
 
   preConfigure = ''
       # Purity.
-      for i in /usr /sw /opt /pkg; do
-        substituteInPlace ./setup.py --replace $i /no-such-path
-      done
+      sed-i setup.py -e 's,/(usr|sw|opt|pkg),/no-such-path,'
     '' + optionalString (stdenv ? cc && stdenv.cc.libc != null) ''
-      for i in Lib/plat-*/regen; do
-        substituteInPlace $i --replace /usr/include/ ${stdenv.cc.libc}/include/
-      done
-    '' + optionalString stdenv.isCygwin ''
-      # On Cygwin, `make install' tries to read this Makefile.
-      mkdir -p $out/lib/python${majorVersion}/config
-      touch $out/lib/python${majorVersion}/config/Makefile
-      mkdir -p $out/include/python${majorVersion}
-      touch $out/include/python${majorVersion}/pyconfig.h
+      sed-i Lib/plat-*/regen -e 's,/usr/include/,${stdenv.cc.libc}/include/,'
     '';
 
   buildInputs =
     optional (stdenv ? cc && stdenv.cc.libc != null) stdenv.cc.libc ++
-    [ bzip2 openssl ] ++ optionals includeModules [ db openssl ncurses gdbm libX11 readline x11 tcl tk sqlite ]
+    [ bzip2 openssl expat libffi ] ++ optionals includeModules [ db openssl ncurses gdbm libX11 readline x11 tcl tk sqlite ]
     ++ optional zlibSupport zlib;
 
   # Build the basic Python interpreter without modules that have
@@ -65,12 +66,22 @@ let
     C_INCLUDE_PATH = concatStringsSep ":" (map (p: "${p}/include") buildInputs);
     LIBRARY_PATH = concatStringsSep ":" (map (p: "${p}/lib") buildInputs);
 
-    configureFlags = "--enable-shared --with-threads --enable-unicode";
+    configureFlags = [
+      "--enable-shared"
+      "--with-threads"
+      "--enable-unicode"
+      "--with-system-ffi"
+      "--with-system-expat"
+    ] ++ optional stdenv.isCygwin "ac_cv_func_bind_textdomain_codeset=yes";
 
     NIX_CFLAGS_COMPILE = optionalString stdenv.isDarwin "-msse2";
     DETERMINISTIC_BUILD = 1;
 
     setupHook = ./setup-hook.sh;
+
+    postConfigure = if stdenv.isCygwin then ''
+      sed-i Makefile -e 's,PYTHONPATH="$(srcdir),PYTHONPATH="$(abs_srcdir),'
+    '' else null;
 
     postInstall =
       ''
@@ -89,7 +100,7 @@ let
         ln -s $out/share/man/man1/{python2.7.1.gz,python.1.gz}
 
         paxmark E $out/bin/python${majorVersion}
-        
+
         ${ optionalString includeModules "$out/bin/python ./setup.py build_ext"}
       '';
 
@@ -136,15 +147,18 @@ let
       name = "python-${moduleName}-${python.version}";
 
       inherit src patches preConfigure;
+      inherit (python) postConfigure configureFlags;
 
       buildInputs = [ python ] ++ deps;
 
       C_INCLUDE_PATH = concatStringsSep ":" (map (p: "${p}/include") buildInputs);
       LIBRARY_PATH = concatStringsSep ":" (map (p: "${p}/lib") buildInputs);
 
-      buildPhase = ''
-          substituteInPlace setup.py --replace 'self.extensions = extensions' \
-            'self.extensions = [ext for ext in self.extensions if ext.name in ["${internalName}"]]'
+      # non-python gdbm has a libintl dependency on i686-cygwin, not on x86_64-cygwin
+      buildPhase = (if (stdenv.system == "i686-cygwin" && moduleName == "gdbm") then ''
+          sed -i setup.py -e "s:libraries = \['gdbm'\]:libraries = ['gdbm', 'intl']:"
+      '' else '''') + ''
+          sed -i setup.py -e 's,self.extensions = extensions,self.extensions = [ext for ext in self.extensions if ext.name in ["${internalName}"]],'
 
           python ./setup.py build_ext
         '';
@@ -194,10 +208,11 @@ let
       deps = [ sqlite ];
     };
 
-    tkinter = buildInternalPythonModule {
+    # not investigated yet
+    tkinter = if stdenv.isCygwin then null else (buildInternalPythonModule {
       moduleName = "tkinter";
       deps = [ tcl tk x11 libX11 ];
-    };
+    });
 
     readline = buildInternalPythonModule {
       moduleName = "readline";
