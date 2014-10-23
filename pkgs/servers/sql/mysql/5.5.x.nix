@@ -11,6 +11,11 @@ stdenv.mkDerivation rec {
     sha256 = "0q29nzmmxm78b89qjfzgm93r0glaam3xw3zfx1k8ihii39v22dsd";
   };
 
+  patches = stdenv.lib.optionals stdenv.isCygwin [
+    ./5.5.17-cygwin.patch
+    ./5.5.17-export-symbols.patch
+  ];
+
   preConfigure = stdenv.lib.optional stdenv.isDarwin ''
     ln -s /bin/ps $TMPDIR/ps
     export PATH=$PATH:$TMPDIR
