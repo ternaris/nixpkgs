@@ -35,6 +35,7 @@ let
 
     ++ stdenv.lib.optional isDarwin ./darwin-arch.patch;
 
+  extraPatches = if stdenv.isCygwin then [ ./1.0.1-cygwin64.patch ] else [];
 in
 
 stdenv.mkDerivation {
@@ -48,7 +49,7 @@ stdenv.mkDerivation {
     sha256 = "1wzdaiix40lz0rsyf51qv0wiq4ywp29j5ni0xzl06vxsi63wlq0v";
   };
 
-  patches = patchesCross false;
+  patches = (patchesCross false) ++ extraPatches;
 
   buildInputs = stdenv.lib.optional withCryptodev cryptodevHeaders;
 
@@ -62,14 +63,7 @@ stdenv.mkDerivation {
     else "./config";
 
   configureFlags = "shared --libdir=lib --openssldir=etc/ssl" +
-    stdenv.lib.optionalString withCryptodev " -DHAVE_CRYPTODEV -DUSE_CRYPTODEV_DIGESTS" +
-    stdenv.lib.optionalString (stdenv.system == "x86_64-cygwin") " no-asm";
-
-  # CYGWINTODO
-
-  preBuild = stdenv.lib.optionalString (stdenv.system == "x86_64-cygwin") ''
-    sed -i -e "s|-march=i486|-march=x86-64|g" Makefile
-  '';
+    stdenv.lib.optionalString withCryptodev " -DHAVE_CRYPTODEV -DUSE_CRYPTODEV_DIGESTS";
 
   makeFlags = "MANDIR=$(out)/share/man";
 
