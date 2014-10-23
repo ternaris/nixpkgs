@@ -185,10 +185,10 @@ let
       deps = [ sqlite ];
     };
 
-    tkinter = buildInternalPythonModule {
+    tkinter = if stdenv.isCygwin then null else (buildInternalPythonModule {
       moduleName = "tkinter";
       deps = [ tcl tk x11 libX11 ];
-    };
+    });
 
     readline = buildInternalPythonModule {
       moduleName = "readline";
