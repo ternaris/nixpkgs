@@ -44,7 +44,22 @@ import ../generic rec {
  #      export NIX_LDFLAGS_AFTER+=" -L$SDKROOT/usr/lib"
  #    '';
 
-  initialPath = ((import ../common-path.nix) { inherit pkgs; }) ++ [ pkgs.sysBinutils ];
+  initialPath = ((import ../common-path.nix) { inherit pkgs; }) ++ [ pkgs.sysBinutils (stdenv.mkDerivation {
+    name = "cygwin-and-windows-dlls";
+    unpackPhase = "true";
+
+    # XXX: dll lists are currently arbitrary
+    # remove dlls from the store path and readd until it fits
+    # then update lists accordingly.
+    # XXX: windows DLLS may not be copied! instead add them to the PATH
+    installPhase = ''
+      mkdir -p $out/bin
+
+      for x in $(cat ${if system == "i686-cygwin" then ./dll-list-i686-cygwin else ./dll-list-x86_64-cygwin}); do
+        cp -v $x $out/bin
+      done
+    '';
+  }) "/cygdrive/c/Windows/SYSTEM32/" ];
 
   system = stdenv.system;
 

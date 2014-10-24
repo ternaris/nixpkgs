@@ -4163,12 +4163,9 @@ let
     unpackPhase = "true";
     installPhase = ''
       mkdir -p $out/bin
-      ln -s /usr/bin/{addr2line,ar,as,c++filt,elfedit,gprof,ld,ld.bfd,nm,objcopy,objdump,ranlib,readelf,size,strings,strip} $out/bin/
-      ln -s /usr/bin/windres $out/bin
-      ln -s /cygdrive/c/Windows/SYSTEM32/{ntdll.dll,KERNEL32.DLL,KERNELBASE.dll} $out/bin
-      ln -s /usr/bin/{cygwin1.dll,cygintl-8.dll,cyggcc_s-1.dll,cygiconv-2.dll} $out/bin
+      cp /usr/bin/{addr2line,ar,as,c++filt,elfedit,gprof,ld,ld.bfd,nm,objcopy,objdump,ranlib,readelf,size,strings,strip} $out/bin/
+      cp /usr/bin/windres $out/bin
     '';
-    # XXX: windres hacked in here, maybe better place
   };
 
   binutils_nogold = lowPrio (callPackage ../development/tools/misc/binutils {
