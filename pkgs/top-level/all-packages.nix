@@ -4164,7 +4164,7 @@ let
     installPhase = ''
       mkdir -p $out/bin
       cp /usr/bin/{addr2line,ar,as,c++filt,elfedit,gprof,ld,ld.bfd,nm,objcopy,objdump,ranlib,readelf,size,strings,strip} $out/bin/
-      cp /usr/bin/windres $out/bin
+      cp /usr/bin/{dlltool,windres} $out/bin
     '';
   };
 
