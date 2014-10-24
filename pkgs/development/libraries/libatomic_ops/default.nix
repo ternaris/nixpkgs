@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, automake, libtool }:
+{ stdenv, fetchurl, autoconf, automake, libtool }:
 let
   s = # Generated upstream information
   rec {
@@ -9,7 +9,7 @@ let
     url="http://www.ivmaisoft.com/_bin/atomic_ops/libatomic_ops-7.4.2.tar.gz";
     sha256="1pdm0h1y7bgkczr8byg20r6bq15m5072cqm5pny4f9crc9gn3yh4";
   };
-  buildInputs = [ automake libtool ];
+  buildInputs = [ autoconf automake libtool ];
 in
 stdenv.mkDerivation {
   inherit (s) name version;
