@@ -4164,7 +4164,9 @@ let
     installPhase = ''
       mkdir -p $out/bin
       ln -s /usr/bin/{addr2line,ar,as,c++filt,elfedit,gprof,ld,ld.bfd,nm,objcopy,objdump,ranlib,readelf,size,strings,strip} $out/bin/
+      ln -s /usr/bin/windres $out/bin
     '';
+    # XXX: windres hacked in here, maybe better place
   };
 
   binutils_nogold = lowPrio (callPackage ../development/tools/misc/binutils {
