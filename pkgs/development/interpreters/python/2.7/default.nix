@@ -140,8 +140,7 @@ let
       LIBRARY_PATH = concatStringsSep ":" (map (p: "${p}/lib") buildInputs);
 
       buildPhase = ''
-          substituteInPlace setup.py --replace 'self.extensions = extensions' \
-            'self.extensions = [ext for ext in self.extensions if ext.name in ["${internalName}"]]'
+          sed -i setup.py -e 's,self.extensions = extensions,self.extensions = [ext for ext in self.extensions if ext.name in ["${internalName}"]],'
 
           python ./setup.py build_ext
         '';
