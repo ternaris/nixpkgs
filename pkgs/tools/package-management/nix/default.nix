@@ -42,7 +42,7 @@ stdenv.mkDerivation rec {
       CFLAGS=-O3 CXXFLAGS=-O3
     '';
 
-  makeFlags = "profiledir=$(out)/etc/profile.d";
+  makeFlags = "libdir=$(out)/lib profiledir=$(out)/etc/profile.d";
 
   installFlags = "sysconfdir=$(out)/etc";
 

@@ -5,7 +5,11 @@
 import ../generic rec {
   inherit config;
 
-  extraBuildInputs = [ ./rebase-libraries.sh ];
+  extraBuildInputs = [
+    ./rebase-libraries.sh
+    ./wrap-to-find-dlls.sh
+    pkgs.makeWrapper
+  ];
 
   preHook =
     ''
