@@ -30,25 +30,25 @@ let
 
       # http://bugs.python.org/issue21963
       ./remove-avoid-daemon-thread-shutdown.patch
+    ] ++ optionals stdenv.isCygwin [
+      ./2.5.2-ctypes-util-find_library.patch
+      ./2.5.2-tkinter-x11.patch
+      ./2.6.2-ssl-threads.patch
+      ./2.6.5-export-PySignal_SetWakeupFd.patch
+      ./2.6.5-FD_SETSIZE.patch
+      ./2.6.5-ncurses-abi6.patch
+      ./2.7.3-dbm.patch
+      ./2.7.3-dylib.patch
+      ./2.7.3-getpath-exe-extension.patch
+      ./2.7.3-no-libm.patch
+      ./2.7.5-export-PyNode_SizeOf.patch
     ];
-    
-  # CYGWINTODO
 
   preConfigure = ''
       # Purity.
-      for i in /usr /sw /opt /pkg; do
-        substituteInPlace ./setup.py --replace $i /no-such-path
-      done
+      sed -i setup.py -e 's,/(usr|sw|opt|pkg),/no-such-path,'
     '' + optionalString (stdenv ? gcc && stdenv.gcc.libc != null) ''
-      for i in Lib/plat-*/regen; do
-        substituteInPlace $i --replace /usr/include/ ${stdenv.gcc.libc}/include/
-      done
-    '' + optionalString stdenv.isCygwin ''
-      # On Cygwin, `make install' tries to read this Makefile.
-      mkdir -p $out/lib/python${majorVersion}/config
-      touch $out/lib/python${majorVersion}/config/Makefile
-      mkdir -p $out/include/python${majorVersion}
-      touch $out/include/python${majorVersion}/pyconfig.h
+      sed -i Lib/plat-*/regen -e 's,/usr/include/,${stdenv.gcc.libc}/include/,'
     '';
 
   buildInputs =
@@ -67,7 +67,13 @@ let
     C_INCLUDE_PATH = concatStringsSep ":" (map (p: "${p}/include") buildInputs);
     LIBRARY_PATH = concatStringsSep ":" (map (p: "${p}/lib") buildInputs);
 
-    configureFlags = "--enable-shared --with-threads --enable-unicode";
+    configureFlags = [
+      "--enable-shared"
+      "--with-threads"
+      "--enable-unicode"
+      "--with-system-ffi"
+      "--with-system-expat"
+    ] ++ optional stdenv.isCygwin "ac_cv_func_bind_textdomain_codeset=yes";
 
     NIX_CFLAGS_COMPILE = optionalString stdenv.isDarwin "-msse2";
     DETERMINISTIC_BUILD = 1;
@@ -82,7 +88,7 @@ let
         ln -s $out/share/man/man1/{python2.7.1.gz,python.1.gz}
 
         paxmark E $out/bin/python${majorVersion}
-        
+
         ${ optionalString includeModules "$out/bin/python ./setup.py build_ext"}
       '';
 
@@ -185,6 +191,7 @@ let
       deps = [ sqlite ];
     };
 
+    # not investigated yet
     tkinter = if stdenv.isCygwin then null else (buildInternalPythonModule {
       moduleName = "tkinter";
       deps = [ tcl tk x11 libX11 ];
