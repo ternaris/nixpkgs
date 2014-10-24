@@ -57,7 +57,7 @@ rec {
     if system == "powerpc-linux" then /* stdenvLinux */ stdenvNative else
     if system == "x86_64-darwin" then stdenvNix else
     if system == "x86_64-solaris" then stdenvNix else
-    if system == "i686-cygwin" then stdenvCygwin else
-    if system == "x86_64-cygwin" then stdenvCygwin else
+    if system == "i686-cygwin" then stdenvNative else
+    if system == "x86_64-cygwin" then stdenvNative else
     stdenvNative;
 }
