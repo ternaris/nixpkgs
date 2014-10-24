@@ -78,6 +78,9 @@ rec {
   prehookCygwin = ''
     ${prehookBase}
 
+    # prevent libtool from failing to find dynamic libraries
+    export lt_cv_deplibs_check_method=pass_all
+
     # if test -z "$cygwinConfigureNoDisableShared"; then
     #   export configureFlags="$configureFlags --disable-shared"
     # fi
