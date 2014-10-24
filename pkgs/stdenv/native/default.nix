@@ -12,6 +12,10 @@ rec {
     (if system == "x86_64-solaris" then [ "/opt/local/gnu" ] else []) ++
     ["/" "/usr" "/usr/local"];
 
+
+  # XXX: correctly camelcase this
+
+
   prehookBase = ''
     # Disable purity tests; it's allowed (even needed) to link to
     # libraries outside the Nix store (like the C library).
@@ -71,17 +75,13 @@ rec {
   '';
 
   # Only used to build stdenvCygwin, check cygwin/default.nix.
-  # XXX: Can we readfile the same on as used for cygwin/default.nix
   prehookCygwin = ''
     ${prehookBase}
-  '';
-  #   if test -z "$cygwinConfigureNoDisableShared"; then
-  #     export configureFlags="$configureFlags --disable-shared"
-  #   fi
 
-  #   # Should not be needed by cygwin, but would be relevant for mingw.
-  #   PATH_DELIMITER=';'
-  # '';
+    # if test -z "$cygwinConfigureNoDisableShared"; then
+    #   export configureFlags="$configureFlags --disable-shared"
+    # fi
+  '';
 
   extraBuildInputsCygwin = [ ../cygwin/rebase-libraries.sh ];
 
