@@ -4161,6 +4161,7 @@ let
   sysBinutils = stdenv.mkDerivation {
     name = "binutils-native";
     unpackPhase = "true";
+    # XXX: add dllwrap windmc - gonna rebuild... and link instead of copy
     installPhase = ''
       mkdir -p $out/bin
       cp /usr/bin/{addr2line,ar,as,c++filt,elfedit,gprof,ld,ld.bfd,nm,objcopy,objdump,ranlib,readelf,size,strings,strip} $out/bin/
