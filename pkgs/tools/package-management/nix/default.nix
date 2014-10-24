@@ -24,6 +24,13 @@ stdenv.mkDerivation rec {
        export LIBRARY_PATH="${bzip2}/lib"
     '';
 
+  patches = stdenv.lib.optionals stdenv.isCygwin [
+    ./0001-cygwin-fix-linking.patch
+    ./0002-cygwin-fix-flags.patch
+    ./0003-add-missing-includes.patch
+    ./0004-autodetect-libperl-dll-location.patch
+  ];
+
   configureFlags =
     ''
       --with-store-dir=${storeDir} --localstatedir=${stateDir} --sysconfdir=/etc
