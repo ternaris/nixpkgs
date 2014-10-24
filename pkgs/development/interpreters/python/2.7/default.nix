@@ -1,5 +1,6 @@
 { stdenv, fetchurl, zlib ? null, zlibSupport ? true, bzip2, includeModules ? false
-, sqlite, tcl, tk, x11, openssl, readline, db, ncurses, gdbm, libX11 }:
+, sqlite, tcl, tk, x11, openssl, readline, db, ncurses, gdbm, libX11
+, expat, libffi }:
 
 assert zlibSupport -> zlib != null;
 
@@ -53,7 +54,7 @@ let
 
   buildInputs =
     optional (stdenv ? gcc && stdenv.gcc.libc != null) stdenv.gcc.libc ++
-    [ bzip2 openssl ] ++ optionals includeModules [ db openssl ncurses gdbm libX11 readline x11 tcl tk sqlite ]
+    [ bzip2 openssl expat libffi ] ++ optionals includeModules [ db openssl ncurses gdbm libX11 readline x11 tcl tk sqlite ]
     ++ optional zlibSupport zlib;
 
   # Build the basic Python interpreter without modules that have
@@ -79,6 +80,10 @@ let
     DETERMINISTIC_BUILD = 1;
 
     setupHook = ./setup-hook.sh;
+
+    postConfigure = ''
+      sed -i Makefile -e 's,PYTHONPATH="$(srcdir),PYTHONPATH="$(abs_srcdir),'
+    '';
 
     postInstall =
       ''
