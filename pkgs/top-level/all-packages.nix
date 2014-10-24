@@ -7398,7 +7398,8 @@ let
       cd ..
       mkdir -p $out
       mv $srcdir $out/raw
-      patchShebangs $out/raw/bin
+      # patchShebangs seems not to work (on these files)
+      sed -i $out/raw/bin/?*.pl -e 's,^#!/usr/bin/perl,#!${perl}/bin/perl,'
       chmod +x $out/raw/bin/?*.pl
     '';
   };
