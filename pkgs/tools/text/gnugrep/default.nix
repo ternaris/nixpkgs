@@ -14,7 +14,8 @@ stdenv.mkDerivation {
 
   NIX_LDFLAGS = stdenv.lib.optionalString (libiconvOrNull != null) "-L${libiconvOrNull}/lib -liconv";
 
-  doCheck = !stdenv.isDarwin;
+  # cygwin: FAIL: multibyte-white-space
+  doCheck = !stdenv.isDarwin && !stdenv.isCygwin;
 
   # On Mac OS X, force use of mkdir -p, since Grep's fallback
   # (./install-sh) is broken.
