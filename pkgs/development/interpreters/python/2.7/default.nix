@@ -74,7 +74,7 @@ let
       "--enable-unicode"
       "--with-system-ffi"
       "--with-system-expat"
-    ] ++ optional stdenv.isCygwin "ac_cv_lib_intl_textdomain=yes ac_cv_func_bind_textdomain_codeset=yes";
+    ] ++ optional stdenv.isCygwin "ac_cv_func_bind_textdomain_codeset=yes";
 
     NIX_CFLAGS_COMPILE = optionalString stdenv.isDarwin "-msse2";
     DETERMINISTIC_BUILD = 1;
