@@ -138,6 +138,7 @@ let
       name = "python-${moduleName}-${python.version}";
 
       inherit src patches preConfigure;
+      inherit (python) postConfigure configureFlags;
 
       buildInputs = [ python ] ++ deps;
 
