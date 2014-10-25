@@ -145,7 +145,9 @@ let
       C_INCLUDE_PATH = concatStringsSep ":" (map (p: "${p}/include") buildInputs);
       LIBRARY_PATH = concatStringsSep ":" (map (p: "${p}/lib") buildInputs);
 
-      buildPhase = ''
+      buildPhase = (if (stdenv.isCygwin && moduleName == "gdbm") then ''
+          sed -i setup.py -e "s:libraries = \['gdbm'\]:libraries = ['gdbm', 'intl']:"
+      '' else '''') + ''
           sed -i setup.py -e 's,self.extensions = extensions,self.extensions = [ext for ext in self.extensions if ext.name in ["${internalName}"]],'
 
           python ./setup.py build_ext
