@@ -24,6 +24,7 @@ rec {
 
   preHookDarwin = ''
     ${preHookBase}
+    alias sed-i='sed -i ""'
     export NIX_DONT_SET_RPATH=1
     export NIX_NO_SELF_RPATH=1
     dontFixLibtool=1
@@ -31,12 +32,16 @@ rec {
     xargsFlags=" "
   '';
 
+  # XXX: We need to handle Darwin with bsdtools anyway. Is it sane to
+  # require and alias gnu tools on *BSD below?
+
   preHookFreeBSD = ''
     ${preHookBase}
 
     alias make=gmake
     alias tar=gtar
     alias sed=gsed
+    alias sed-i='gsed -i""'
     export MAKE=gmake
     shopt -s expand_aliases
 
@@ -52,6 +57,7 @@ rec {
     alias mv=gmv
     alias ln=gln
     alias sed=gsed
+    alias sed-i='gsed -i""'
     alias tar=gtar
 
     export MAKE=gmake
@@ -66,6 +72,7 @@ rec {
 
     alias make=gmake
     alias sed=gsed
+    alias sed-i='gsed -i""'
     alias tar=gtar
     export MAKE=gmake
     shopt -s expand_aliases
