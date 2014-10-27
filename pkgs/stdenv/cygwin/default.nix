@@ -6,6 +6,7 @@ import ../generic rec {
   inherit config;
 
   extraBuildInputs = [
+    ./propagate-build-inputs.sh
     ./rebase-libraries.sh
     ./wrap-to-find-dlls.sh
     pkgs.makeWrapper
