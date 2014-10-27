@@ -13,13 +13,13 @@ stdenv.mkDerivation {
     sha256 = "0sb3h3067pzf3a7mlxn1hikpcjrsvycjcnj9hl9b1c3ykcgvps7h";
   };
 
-  buildFlags="-f unix/Makefile generic";
+  buildFlags="-f unix/Makefile ${if stdenv.isCygwin then "cygwin" else "generic"}";
 
   installFlags="-f unix/Makefile prefix=$(out) INSTALL=cp";
 
-  patches = if enableNLS then [ ./natspec-gentoo.patch.bz2 ] else [];
+  patches = if (enableNLS && !stdenv.isCygwin) then [ ./natspec-gentoo.patch.bz2 ] else [];
 
-  postPatch = ''
+  postPatch = stdenv.lib.optionalString (enableNLS && !stdenv.isCygwin) ''
     sed -i unix/Makefile -e 's,LDADD = -lnatspec,LDADD = -lnatspec -liconv,'
   '';
 
