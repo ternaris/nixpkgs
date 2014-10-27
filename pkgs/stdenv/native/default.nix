@@ -16,14 +16,14 @@ rec {
   # XXX: correctly camelcase this
 
 
-  prehookBase = ''
+  preHookBase = ''
     # Disable purity tests; it's allowed (even needed) to link to
     # libraries outside the Nix store (like the C library).
     export NIX_ENFORCE_PURITY=
   '';
 
-  prehookDarwin = ''
-    ${prehookBase}
+  preHookDarwin = ''
+    ${preHookBase}
     export NIX_DONT_SET_RPATH=1
     export NIX_NO_SELF_RPATH=1
     dontFixLibtool=1
@@ -31,8 +31,8 @@ rec {
     xargsFlags=" "
   '';
 
-  prehookFreeBSD = ''
-    ${prehookBase}
+  preHookFreeBSD = ''
+    ${preHookBase}
 
     alias make=gmake
     alias tar=gtar
@@ -44,8 +44,8 @@ rec {
     export NIX_GCC_NEEDS_GREP=1
   '';
 
-  prehookOpenBSD = ''
-    ${prehookBase}
+  preHookOpenBSD = ''
+    ${preHookBase}
 
     alias make=gmake
     alias grep=ggrep
@@ -61,8 +61,8 @@ rec {
     export NIX_GCC_NEEDS_GREP=1
   '';
 
-  prehookNetBSD = ''
-    ${prehookBase}
+  preHookNetBSD = ''
+    ${preHookBase}
 
     alias make=gmake
     alias sed=gsed
@@ -75,8 +75,8 @@ rec {
   '';
 
   # Only used to build stdenvCygwin, check cygwin/default.nix.
-  prehookCygwin = ''
-    ${prehookBase}
+  preHookCygwin = ''
+    ${preHookBase}
 
     # prevent libtool from failing to find dynamic libraries
     export lt_cv_deplibs_check_method=pass_all
@@ -95,14 +95,14 @@ rec {
 
     import ../generic {
       preHook =
-        if system == "x86_64-darwin" then prehookDarwin else
-        if system == "i686-freebsd" then prehookFreeBSD else
-        if system == "x86_64-freebsd" then prehookFreeBSD else
-        if system == "i686-openbsd" then prehookOpenBSD else
-        if system == "i686-netbsd" then prehookNetBSD else
-        if system == "i686-cygwin" then prehookCygwin else
-        if system == "x86_64-cygwin" then prehookCygwin else
-        prehookBase;
+        if system == "x86_64-darwin" then preHookDarwin else
+        if system == "i686-freebsd" then preHookFreeBSD else
+        if system == "x86_64-freebsd" then preHookFreeBSD else
+        if system == "i686-openbsd" then preHookOpenBSD else
+        if system == "i686-netbsd" then preHookNetBSD else
+        if system == "i686-cygwin" then preHookCygwin else
+        if system == "x86_64-cygwin" then preHookCygwin else
+        preHookBase;
 
       extraBuildInputs =
         if system == "i686-cygwin" then extraBuildInputsCygwin else
