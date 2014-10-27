@@ -85,7 +85,8 @@ rec {
   preHookCygwin = ''
     ${preHookBase}
 
-    alias sed-i='sed -i ""'
+    alias sed-i='sed -i""'
+    shopt -s expand_aliases
 
     # prevent libtool from failing to find dynamic libraries
     export lt_cv_deplibs_check_method=pass_all

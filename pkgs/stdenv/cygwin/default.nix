@@ -13,6 +13,7 @@ import ../generic rec {
 
   preHook = ''
     alias sed-i='sed -i""'
+    shopt -s expand_aliases
 
     # Disable purity tests; it's allowed (even needed) to link to
     # libraries outside the Nix store (like the C library).
