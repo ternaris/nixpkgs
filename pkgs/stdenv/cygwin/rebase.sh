@@ -6,7 +6,7 @@ _cygwinFixAutoImageBase() {
             if [ -f /etc/rebasenix.nextbase ]; then
                 NEXTBASE="$(</etc/rebasenix.nextbase)"
             fi
-            NEXTBASE=${NEXTBASE:-0x61500000}
+            NEXTBASE=${NEXTBASE:-0x62000000}
 
             REBASE=(`/bin/rebase -i $DLL`)
             BASE=${REBASE[2]}
