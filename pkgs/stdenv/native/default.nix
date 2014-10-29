@@ -91,12 +91,14 @@ rec {
     # prevent libtool from failing to find dynamic libraries
     export lt_cv_deplibs_check_method=pass_all
 
+    export NIX_LDFLAGS_AFTER="--enable-auto-image-base $NIX_LDFLAGS_AFTER"
+
     # if test -z "$cygwinConfigureNoDisableShared"; then
     #   export configureFlags="$configureFlags --disable-shared"
     # fi
   '';
 
-  extraBuildInputsCygwin = [ ../cygwin/rebase-libraries.sh ];
+  extraBuildInputsCygwin = [ ../cygwin/rebase.sh ];
 
   # A function that builds a "native" stdenv (one that uses tools in
   # /usr etc.).
