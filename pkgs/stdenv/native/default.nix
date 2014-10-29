@@ -95,7 +95,10 @@ rec {
     # fi
   '';
 
-  extraBuildInputsCygwin = [ ../cygwin/rebase.sh ];
+  extraBuildInputsCygwin = [
+    ../cygwin/rebase.sh
+    ../cygwin/propagate-build-inputs.sh
+  ];
 
   # A function that builds a "native" stdenv (one that uses tools in
   # /usr etc.).
