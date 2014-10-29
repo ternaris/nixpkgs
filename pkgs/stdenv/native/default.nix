@@ -13,9 +13,6 @@ rec {
     ["/" "/usr" "/usr/local"];
 
 
-  # XXX: correctly camelcase this
-
-
   preHookBase = ''
     # Disable purity tests; it's allowed (even needed) to link to
     # libraries outside the Nix store (like the C library).
