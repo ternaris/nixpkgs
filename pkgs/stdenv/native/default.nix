@@ -96,7 +96,7 @@ rec {
   '';
 
   extraBuildInputsCygwin = [
-    ../cygwin/propagate-build-inputs.sh
+    ../cygwin/all-buildinputs-as-runtimedep.sh
   ] ++ (if system == "i686-cygwin" then [
     ../cygwin/rebase-i686.sh
   ] else if system == "x86_64-cygwin" then [
