@@ -10,10 +10,11 @@ _cygwinFixAutoImageBase() {
         REBASE=(`/bin/rebase -i $DLL`)
         BASE=${REBASE[2]}
         SIZE=${REBASE[4]}
+        SKIP=$((($SIZE%0x10000+1)*0x10000))
 
         echo "REBASE FIX: $DLL $BASE -> $NEXTBASE"
         /bin/rebase -b $NEXTBASE $DLL
-        NEXTBASE="0x`printf %x $(($NEXTBASE+$SIZE))`"
+        NEXTBASE="0x`printf %x $(($NEXTBASE+$SKIP))`"
 
         echo $NEXTBASE > /etc/rebasenix.nextbase
     done
