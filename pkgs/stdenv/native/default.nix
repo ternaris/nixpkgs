@@ -97,6 +97,7 @@ rec {
 
   extraBuildInputsCygwin = [
     ../cygwin/all-buildinputs-as-runtimedep.sh
+    ../cygwin/wrap-exes-to-find-dlls.sh
   ] ++ (if system == "i686-cygwin" then [
     ../cygwin/rebase-i686.sh
   ] else if system == "x86_64-cygwin" then [
