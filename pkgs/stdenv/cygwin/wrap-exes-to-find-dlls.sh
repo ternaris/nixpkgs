@@ -63,16 +63,9 @@ _cygwinWrapExesToFindDlls() {
 
         mv "${EXE}" "${EXE}.tmp"
 
-        DLLPATH=$out/bin
-        for x in $buildInputs $nativeBuildInputs; do
-            if [ -d "${x}/bin" ]; then
-                DLLPATH="${DLLPATH}${DLLPATH:+:}${x}/bin"
-            fi
-        done
-
         cat >"${WRAPPER}" <<EOF
 #!/bin/sh
-export PATH=$DLLPATH${DLLPATH:+:}\${PATH}
+export PATH=$_PATH${_PATH:+:}\${PATH}
 exec "\$0.exe" "\$@"
 EOF
         chmod +x "${WRAPPER}"
