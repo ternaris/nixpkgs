@@ -6,11 +6,11 @@ postFixupHooks+=(_cygwinAllBuildInputsAsRuntimeDep)
 _cygwinAllBuildInputsAsRuntimeDep() {
     if [ -n "$buildInputs" ]; then
         mkdir -p "$out/nix-support"
-        echo "$buildInputs" >> "$out/nix-support/cygwin-runtime-deps"
+        echo "$buildInputs" >> "$out/nix-support/cygwin-buildinputs-as-runtime-deps"
     fi
 
     if [ -n "$nativeBuildInputs" ]; then
         mkdir -p "$out/nix-support"
-        echo "$nativeBuildInputs" >> "$out/nix-support/cygwin-runtime-deps"
+        echo "$nativeBuildInputs" >> "$out/nix-support/cygwin-buildinputs-as-runtime-deps"
     fi
 }
