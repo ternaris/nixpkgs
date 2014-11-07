@@ -23,6 +23,15 @@ stdenv.mkDerivation rec {
   configureFlags = ''
     --with-shared --without-debug --enable-pc-files --enable-symlinks
     ${if unicode then "--enable-widec" else ""}${if cxx then "" else "--without-cxx-binding"}
+  '' + stdenv.lib.optionalString stdenv.isCygwin ''
+    --enable-sp-funcs
+    --enable-term-driver
+    --enable-const
+    --enable-ext-colors
+    --enable-ext-mouse
+    --enable-reentrant
+    --enable-colorfgbg
+    --enable-tcap-names
   '';
 
   # PKG_CONFIG_LIBDIR is where the *.pc files will be installed. If this
@@ -35,6 +44,8 @@ stdenv.mkDerivation rec {
     export configureFlags="$configureFlags --includedir=$out/include"
     export PKG_CONFIG_LIBDIR="$out/lib/pkgconfig"
     mkdir -p "$PKG_CONFIG_LIBDIR"
+  '' + lib.optionalString stdenv.isCygwin ''
+    sed-i -e 's,LIB_SUFFIX="t,LIB_SUFFIX=",' configure
   '';
 
   selfNativeBuildInput = true;
@@ -59,6 +70,9 @@ stdenv.mkDerivation rec {
         ln -svf lib''${lib}w.a $out/lib/lib$lib.a
         ln -svf lib''${lib}w.so.5 $out/lib/lib$lib.so.5
         ln -svf ''${lib}w.pc $out/lib/pkgconfig/$lib.pc
+        if test -e $out/lib/lib''${lib}w.dll.a; then
+            ln -svf lib''${lib}w.dll.a $out/lib/lib$lib.dll.a
+        fi
       fi
     done;
     ln -svf . $out/include/ncursesw
