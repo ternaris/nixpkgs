@@ -6196,11 +6196,7 @@ let
 
   nanomsg = callPackage ../development/libraries/nanomsg { };
 
-  # CYGWINTODO
-
-  ncurses = callPackage ../development/libraries/ncurses {
-    unicode = system != "i686-cygwin";
-  };
+  ncurses = callPackage ../development/libraries/ncurses { };
 
   neon = callPackage ../development/libraries/neon {
     compressionSupport = true;
